@@ -1,5 +1,4 @@
 import * as vscode from 'vscode';
-import { toUpperCaseCommand } from './commands/toUpperCase';
 
 export function activate(context: vscode.ExtensionContext) {
 
@@ -9,9 +8,25 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.window.showInformationMessage('Hello World from shotwrite!');
 	});
 
-	const toUpperCaseDisposable = vscode.commands.registerCommand('shotwrite.toUpperCase', toUpperCaseCommand);
+	const autoUpperCaseDisposable = vscode.workspace.onDidChangeTextDocument(event => {
+		const changes = event.contentChanges[0];
+		// Trigger condition: typing a single '.'
+		if (changes.text === '.' && changes.rangeLength === 0) {
+			const dotPosition = changes.range.start;
+			const wordRange = event.document.getWordRangeAtPosition(dotPosition);
 
-	context.subscriptions.push(helloWorldDisposable, toUpperCaseDisposable);
+			if (wordRange) {
+				const word = event.document.getText(wordRange);
+				const upperWord = word.toUpperCase();
+
+				const edit = new vscode.WorkspaceEdit();
+				edit.replace(event.document.uri, wordRange, upperWord);
+				vscode.workspace.applyEdit(edit);
+			}
+		}
+	});
+
+	context.subscriptions.push(helloWorldDisposable, autoUpperCaseDisposable);
 }
 
 export function deactivate() {}

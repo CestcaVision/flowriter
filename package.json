@@ -11,7 +11,7 @@
   ],
   "activationEvents": [
     "onCommand:shotwrite.helloWorld",
-    "onCommand:shotwrite.toUpperCase"
+    "*"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -19,10 +19,6 @@
       {
         "command": "shotwrite.helloWorld",
         "title": "Hello World"
-      },
-      {
-        "command": "shotwrite.toUpperCase",
-        "title": "Convert File to Uppercase"
       }
     ]
   },
