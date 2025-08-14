@@ -11,8 +11,8 @@ suite('Extension Test Suite', () => {
 
     test('Should have helloWorld command', async () => {
         const commands = await vscode.commands.getCommands(true);
-        const hasCommand = commands.includes('shotwrite.helloWorld');
-        assert.ok(hasCommand, 'Command shotwrite.helloWorld not found');
+        const hasCommand = commands.includes('flowriter.helloWorld');
+        assert.ok(hasCommand, 'Command flowriter.helloWorld not found');
     });
 
     test('Should convert text to uppercase', async () => {
@@ -31,7 +31,7 @@ suite('Extension Test Suite', () => {
             });
         });
 
-        await vscode.commands.executeCommand('shotwrite.toUpperCase');
+        await vscode.commands.executeCommand('flowriter.toUpperCase');
         await editApplied;
 
         const text = document.getText();

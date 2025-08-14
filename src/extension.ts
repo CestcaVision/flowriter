@@ -65,18 +65,18 @@ async function handleApiCommand(apiFunction: (word: string) => Promise<string | 
 
 export function activate(context: vscode.ExtensionContext) {
 
-    console.log('Congratulations, your extension "shotwrite" is now active!');
+    console.log('Congratulations, your extension "flowriter" is now active!');
 
-    const helloWorldDisposable = vscode.commands.registerCommand('shotwrite.helloWorld', () => {
-        vscode.window.showInformationMessage('Hello World from shotwrite!');
+    const helloWorldDisposable = vscode.commands.registerCommand('flowriter.helloWorld', () => {
+        vscode.window.showInformationMessage('Hello World from flowriter!');
     });
 
     // --- Register Commands for Completion Items ---
-    const definitionCommandDisposable = vscode.commands.registerCommand('shotwrite.getDefinitionCommand', (word: string, range: vscode.Range, label: string) => {
+    const definitionCommandDisposable = vscode.commands.registerCommand('flowriter.getDefinitionCommand', (word: string, range: vscode.Range, label: string) => {
         handleApiCommand(getDefinition, word, range, label);
     });
 
-    const translationCommandDisposable = vscode.commands.registerCommand('shotwrite.getTranslationCommand', (word: string, range: vscode.Range, label: string) => {
+    const translationCommandDisposable = vscode.commands.registerCommand('flowriter.getTranslationCommand', (word: string, range: vscode.Range, label: string) => {
         handleApiCommand(getTranslation, word, range, label);
     });
 
@@ -102,14 +102,14 @@ export function activate(context: vscode.ExtensionContext) {
 
                 const definitionItem = new vscode.CompletionItem('definition', vscode.CompletionItemKind.Method);
                 definitionItem.command = {
-                    command: 'shotwrite.getDefinitionCommand',
+                    command: 'flowriter.getDefinitionCommand',
                     title: 'Get Definition',
                     arguments: [word, rangeToReplace, 'definition']
                 };
 
                 const translationItem = new vscode.CompletionItem('translation', vscode.CompletionItemKind.Method);
                 translationItem.command = {
-                    command: 'shotwrite.getTranslationCommand',
+                    command: 'flowriter.getTranslationCommand',
                     title: 'Get Translation',
                     arguments: [word, rangeToReplace, 'translation']
                 };

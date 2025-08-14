@@ -1,8 +1,8 @@
 {
-  "name": "shotwrite",
-  "displayName": "shotwrite",
+  "name": "flowriter",
+  "displayName": "flowriter",
   "description": "A simple VS Code extension.",
-  "publisher": "your-publisher-name",
+  "publisher": "Tricrepe",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.93.0"
@@ -11,7 +11,7 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:shotwrite.helloWorld",
+    "onCommand:flowriter.helloWorld",
     "onLanguage:typescript",
     "onLanguage:javascript",
     "onLanguage:python",
@@ -24,30 +24,35 @@
   "contributes": {
     "commands": [
       {
-        "command": "shotwrite.helloWorld",
+        "command": "flowriter.helloWorld",
         "title": "Hello World"
       },
       {
-        "command": "shotwrite.getDefinitionCommand",
-        "title": "Shotwrite: Get Definition"
+        "command": "flowriter.getDefinitionCommand",
+        "title": "flowriter: Get Definition"
       },
       {
-        "command": "shotwrite.getTranslationCommand",
-        "title": "Shotwrite: Get Translation"
+        "command": "flowriter.getTranslationCommand",
+        "title": "flowriter: Get Translation"
       }
     ],
     "configuration": {
-      "title": "Shotwrite",
+      "title": "flowriter",
       "properties": {
-        "shotwrite.apiKey": {
+        "flowriter.apiKey": {
           "type": "string",
-          "default": "REMOVED_API_KEY",
+          "default": "",
           "description": "API Key for the LLM service."
         },
-        "shotwrite.modelName": {
+        "flowriter.modelName": {
           "type": "string",
-          "default": "deepseek-chat",
+          "default": "",
           "description": "The model name to use for the LLM API."
+        },
+        "flowriter.apiEndpoint": {
+          "type": "string",
+          "default": "https://api.example.com/v1/chat/completions",
+          "description": "The API endpoint for the LLM service."
         }
       }
     }

@@ -2,12 +2,12 @@ import * as vscode from 'vscode';
 import axios from 'axios';
 
 export async function getDefinition(word: string): Promise<string | null> {
-    const config = vscode.workspace.getConfiguration('shotwrite');
+    const config = vscode.workspace.getConfiguration('flowriter');
     const apiKey = config.get<string>('apiKey');
     const modelName = config.get<string>('modelName');
 
     if (!apiKey || !modelName) {
-        vscode.window.showErrorMessage('API Key or Model Name is not configured in Shotwrite settings.');
+        vscode.window.showErrorMessage('API Key or Model Name is not configured in Flowriter settings.');
         return null;
     }
 
