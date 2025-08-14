@@ -2,42 +2,71 @@ import * as vscode from 'vscode';
 import { getDefinition } from './toDefinition';
 import { getTranslation } from './getTranslation';
 
+// Define the decoration type for the placeholder text
+const placeholderDecorationType = vscode.window.createTextEditorDecorationType({
+    fontStyle: 'italic',
+    color: new vscode.ThemeColor('editorHint.foreground')
+});
+
 // Helper function to handle the command logic
 async function handleApiCommand(apiFunction: (word: string) => Promise<string | null>, word: string, originalRange: vscode.Range, completionLabel: string) {
     const editor = vscode.window.activeTextEditor;
     if (!editor) {
-        vscode.window.showErrorMessage('No active text editor to apply the result to.');
         return;
     }
 
-    // The range that includes the original word, the dot, and the text inserted by the completion item.
-    const endPosition = originalRange.end.translate(0, completionLabel.length);
-    const finalRangeToReplace = new vscode.Range(originalRange.start, endPosition);
+    // 1. Define the full range of text to be replaced initially.
+    // This is the original word, the dot, and the text VS Code inserted (the completion label).
+    const fullRangeToDelete = new vscode.Range(originalRange.start, originalRange.end.translate(0, completionLabel.length));
 
-    vscode.window.withProgress({
-        location: vscode.ProgressLocation.Notification,
-        title: `Fetching result for ${word}...`,
-        cancellable: false
-    }, async (_progress) => {
-        const result = await apiFunction(word);
+    // --- Animation & Placeholder Setup ---
+    const placeholderLength = word.length;
+    const animationChars = '⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏';
+    let animationOffset = 0;
+    const getPlaceholderFrame = () => {
+        const frame = (animationChars + animationChars).substring(animationOffset, animationOffset + placeholderLength);
+        animationOffset = (animationOffset + 1) % animationChars.length;
+        return frame;
+    };
+
+    // 2. Immediately replace the entire text (e.g., "word.definition") with the first animation frame.
+    const firstFrame = getPlaceholderFrame();
+    const initialEdit = new vscode.WorkspaceEdit();
+    initialEdit.replace(editor.document.uri, fullRangeToDelete, firstFrame);
+    await vscode.workspace.applyEdit(initialEdit);
+
+    // 3. Start the animation loop
+    let currentPlaceholderRange = new vscode.Range(fullRangeToDelete.start, fullRangeToDelete.start.translate(0, firstFrame.length));
+    editor.setDecorations(placeholderDecorationType, [currentPlaceholderRange]);
+
+    const animationInterval = setInterval(() => {
+        const nextFrame = getPlaceholderFrame();
         const edit = new vscode.WorkspaceEdit();
-        if (result) {
-            // If we got a result, replace the entire range (e.g., "word.definition") with it.
-            edit.replace(editor.document.uri, finalRangeToReplace, result);
-        } else {
-            // If the API fails or returns nothing, at least delete the inserted completion label.
-            const cleanupRange = new vscode.Range(originalRange.end, endPosition);
-            edit.delete(editor.document.uri, cleanupRange);
-        }
-        await vscode.workspace.applyEdit(edit);
-    });
+        edit.replace(editor.document.uri, currentPlaceholderRange, nextFrame);
+        vscode.workspace.applyEdit(edit);
+    }, 150);
+
+    // 4. Call API in the background
+    const result = await apiFunction(word);
+
+    // 5. Stop animation and clear decoration
+    clearInterval(animationInterval);
+    editor.setDecorations(placeholderDecorationType, []);
+
+    // 6. Perform final replacement
+    const finalEdit = new vscode.WorkspaceEdit();
+    if (result) {
+        finalEdit.replace(editor.document.uri, currentPlaceholderRange, result);
+    } else {
+        finalEdit.replace(editor.document.uri, currentPlaceholderRange, word); // Restore original word on failure
+    }
+    await vscode.workspace.applyEdit(finalEdit);
 }
 
 export function activate(context: vscode.ExtensionContext) {
 
     console.log('Congratulations, your extension "shotwrite" is now active!');
 
-    // Register the helloWorld command
     const helloWorldDisposable = vscode.commands.registerCommand('shotwrite.helloWorld', () => {
         vscode.window.showInformationMessage('Hello World from shotwrite!');
     });
@@ -53,7 +82,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     // --- Register Completion Item Provider ---
     const completionProviderDisposable = vscode.languages.registerCompletionItemProvider(
-        ['typescript', 'javascript', 'python', 'html', 'css', 'json', 'markdown'], // Apply to these languages
+        ['typescript', 'javascript', 'python', 'html', 'css', 'json', 'markdown'],
         {
             provideCompletionItems(document: vscode.TextDocument, position: vscode.Position) {
                 
@@ -68,7 +97,7 @@ export function activate(context: vscode.ExtensionContext) {
                 }
                 const word = document.getText(wordRange);
                 
-                // The range to be replaced includes the word and the dot
+                // This is the range of "word."
                 const rangeToReplace = new vscode.Range(wordRange.start, position);
 
                 const definitionItem = new vscode.CompletionItem('definition', vscode.CompletionItemKind.Method);
