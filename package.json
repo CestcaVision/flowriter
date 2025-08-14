@@ -2,6 +2,7 @@
   "name": "shotwrite",
   "displayName": "shotwrite",
   "description": "A simple VS Code extension.",
+  "publisher": "your-publisher-name",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.93.0"
@@ -11,7 +12,13 @@
   ],
   "activationEvents": [
     "onCommand:shotwrite.helloWorld",
-    "*"
+    "onLanguage:typescript",
+    "onLanguage:javascript",
+    "onLanguage:python",
+    "onLanguage:html",
+    "onLanguage:css",
+    "onLanguage:json",
+    "onLanguage:markdown"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -19,8 +26,31 @@
       {
         "command": "shotwrite.helloWorld",
         "title": "Hello World"
+      },
+      {
+        "command": "shotwrite.getDefinitionCommand",
+        "title": "Shotwrite: Get Definition"
+      },
+      {
+        "command": "shotwrite.getTranslationCommand",
+        "title": "Shotwrite: Get Translation"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "Shotwrite",
+      "properties": {
+        "shotwrite.apiKey": {
+          "type": "string",
+          "default": "REMOVED_API_KEY",
+          "description": "API Key for the LLM service."
+        },
+        "shotwrite.modelName": {
+          "type": "string",
+          "default": "deepseek-chat",
+          "description": "The model name to use for the LLM API."
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
@@ -37,16 +67,20 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.93.0",
+    "@types/axios": "^0.9.36",
     "@types/mocha": "^10.0.7",
     "@types/node": "20.x",
+    "@types/vscode": "^1.93.0",
     "@typescript-eslint/eslint-plugin": "^8.3.0",
     "@typescript-eslint/parser": "^8.3.0",
-    "eslint": "^9.9.1",
-    "esbuild": "^0.23.1",
-    "npm-run-all": "^4.1.5",
-    "typescript": "^5.5.4",
     "@vscode/test-cli": "^0.0.10",
-    "@vscode/test-electron": "^2.4.1"
+    "@vscode/test-electron": "^2.4.1",
+    "esbuild": "^0.23.1",
+    "eslint": "^9.9.1",
+    "npm-run-all": "^4.1.5",
+    "typescript": "^5.5.4"
+  },
+  "dependencies": {
+    "axios": "^1.11.0"
   }
 }
