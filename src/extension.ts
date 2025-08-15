@@ -1,6 +1,7 @@
+
 import * as vscode from 'vscode';
-import { getDefinition } from './toDefinition';
-import { getTranslation } from './getTranslation';
+import { getDefinition } from './commands/getDefinition';
+import { getTranslation } from './commands/getTranslation';
 
 // Define the decoration type for the placeholder text
 const placeholderDecorationType = vscode.window.createTextEditorDecorationType({
@@ -82,7 +83,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     // --- Register Completion Item Provider ---
     const completionProviderDisposable = vscode.languages.registerCompletionItemProvider(
-        ['typescript', 'javascript', 'python', 'html', 'css', 'json', 'markdown'],
+        ['txt', 'markdown'],
         {
             provideCompletionItems(document: vscode.TextDocument, position: vscode.Position) {
                 
