@@ -4,7 +4,7 @@
   "description": "A simple VS Code extension.",
   "publisher": "Tricrepe",
   "repository": "https://github.com/CestcaVision/flowriter.git",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.93.0"
   },
